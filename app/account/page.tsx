@@ -12,6 +12,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
+import { PriceWithProduct } from '@/Pricing';
 
 export default async function Account() {
   const [session, userDetails, subscription] = await Promise.all([
@@ -26,13 +27,16 @@ export default async function Account() {
     return redirect('/signin');
   }
 
+  // @ts-ignore
+  const priceWithProduct = subscription?.prices as PriceWithProduct | null;
+
   const subscriptionPrice =
     subscription &&
     new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: subscription?.prices?.currency!,
+      currency: priceWithProduct?.currency!,
       minimumFractionDigits: 0
-    }).format((subscription?.prices?.unit_amount || 0) / 100);
+    }).format((priceWithProduct?.unit_amount || 0) / 100);
 
   const updateName = async (formData: FormData) => {
     'use server';
@@ -80,14 +84,14 @@ export default async function Account() {
           title="Your Plan"
           description={
             subscription
-              ? `You are currently on the ${subscription?.prices?.products?.name} plan.`
+              ? `You are currently on the ${priceWithProduct?.products?.name} plan.`
               : 'You are not currently subscribed to any plan.'
           }
           footer={<ManageSubscriptionButton session={session} />}
         >
           <div className="mt-8 mb-4 text-xl font-semibold">
             {subscription ? (
-              `${subscriptionPrice}/${subscription?.prices?.interval}`
+              `${subscriptionPrice}/${priceWithProduct?.interval}`
             ) : (
               <Link href="/">Choose your plan</Link>
             )}

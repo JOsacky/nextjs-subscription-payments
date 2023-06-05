@@ -15,7 +15,7 @@ type Price = Database['public']['Tables']['prices']['Row'];
 interface ProductWithPrices extends Product {
   prices: Price[];
 }
-interface PriceWithProduct extends Price {
+export interface PriceWithProduct extends Price {
   products: Product | null;
 }
 interface SubscriptionWithProduct extends Subscription {
